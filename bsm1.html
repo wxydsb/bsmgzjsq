@@ -623,7 +623,7 @@
                 wholesaleSales: 0,
                 buyoutSales: 0,
                 baseSalary: 0,
-                lateDays: 0, // 新增迟到天数字段
+                leaveDays: 0, // 修改为请假天数
                 consecutiveOrderBonusEnabled: false,
                 consecutiveRetailTotal: 0,
                 consecutiveWholesaleTotal: 0
@@ -696,7 +696,7 @@
                 resultItems[4].textContent = `${commission.wholesaleShare}元`;
                 resultItems[5].textContent = `${commission.buyoutShare}元`;
                 resultItems[6].textContent = `${commission.totalCommission}元`;
-                resultItems[7].textContent = `-${commission.lateDeduction}元`;
+                resultItems[7].textContent = `-${commission.leaveDeduction}元`;
                 resultItems[8].textContent = `${commission.finalIncome}元`;
             }
             
@@ -705,7 +705,7 @@
             }
         }
 
-        // 核心算法保持不变，新增迟到扣款计算
+        // 核心算法保持不变，修改为请假扣款计算
         function calculateCommission(calculator) {
             const specialCommission = calculator.specialItems * 1;
             const marginCommission = Math.round((calculator.retailTotal - calculator.wholesaleTotal) * 0.10);
@@ -716,13 +716,13 @@
             const buyoutShare = Math.round(calculator.buyoutSales * 0.5 / 3);
             const totalCommission = specialCommission + marginCommission + newCustomerBonus + wholesaleShare + buyoutShare;
             
-            // 计算迟到扣款
+            // 计算请假扣款
             const daysInMonth = getDaysInCurrentMonth();
             const dailyDeduction = calculator.baseSalary / daysInMonth;
-            const lateDeduction = Math.round(dailyDeduction * calculator.lateDays);
+            const leaveDeduction = Math.round(dailyDeduction * calculator.leaveDays);
             
             const totalIncome = calculator.baseSalary + totalCommission + consecutiveOrderBonus;
-            const finalIncome = totalIncome - lateDeduction;
+            const finalIncome = totalIncome - leaveDeduction;
             
             return {
                 specialCommission,
@@ -732,7 +732,7 @@
                 wholesaleShare,
                 buyoutShare,
                 totalCommission,
-                lateDeduction,
+                leaveDeduction,
                 totalIncome,
                 finalIncome,
                 dailyDeduction: Math.round(dailyDeduction),
@@ -878,13 +878,13 @@
                                     <div class="error-message">请输入有效数字</div>
                                 </div>
                                 <div class="input-group">
-                                    <label>⏰ 迟到天数</label>
-                                    <input type="number" value="${calculator.lateDays}" min="0" max="31"
-                                           data-calc-id="${calculator.id}" data-field="lateDays"
-                                           oninput="updateCalculator(${calculator.id}, 'lateDays', this.value)"
+                                    <label>🏖️ 请假天数</label>
+                                    <input type="number" value="${calculator.leaveDays}" min="0" max="31"
+                                           data-calc-id="${calculator.id}" data-field="leaveDays"
+                                           oninput="updateCalculator(${calculator.id}, 'leaveDays', this.value)"
                                            placeholder="例：2">
                                     <div class="error-message">请输入有效数字</div>
-                                    <div class="late-days-info">
+                                    <div class="leave-days-info">
                                         💡 当月共${commission.daysInMonth}天，每天扣款${commission.dailyDeduction}元
                                     </div>
                                 </div>
@@ -951,8 +951,8 @@
                                 <span class="result-value">${commission.totalCommission}元</span>
                             </div>
                             <div class="result-item deduction">
-                                <span>⏰ 迟到扣款：</span>
-                                <span class="result-value">-${commission.lateDeduction}元</span>
+                                <span>🏖️ 请假扣款：</span>
+                                <span class="result-value">-${commission.leaveDeduction}元</span>
                             </div>
                             <div class="result-item total">
                                 <span>💰 最终收入：</span>
