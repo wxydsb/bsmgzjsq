@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>BSM啵斯猫美学研究所</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* 图片懒加载占位符样式 */
+        .lazy-image {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            background-color: #f0f0f0;
+        }
+        .lazy-image.loaded {
+            opacity: 1;
+        }
+        
+        :root {
+            --bg-dark: #000;
+            --bg-light: #f5f5f7;
+            --text-light: #f5f5f7;
+            --text-dark: #1d1d1f;
+            --accent-primary: #333333; /* 改为深灰色 */
+            --accent-secondary: #666666; /* 改为中灰色 */
+            --transition-fast: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --transition-smooth: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            --transition-bounce: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --spacing-xs: 8px;
+            --spacing-sm: 16px;
+            --spacing-md: 32px;
+            --spacing-lg: 64px;
+            --spacing-xl: 128px;
+            --border-radius-sm: 8px;
+            --border-radius-md: 16px;
+            --border-radius-lg: 24px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            /* 移动端优化 */
+            -webkit-overflow-scrolling: touch;
+            touch-action: manipulation;
+            overscroll-behavior-y: contain;
+            text-size-adjust: 100%;
+            -webkit-text-size-adjust: 100%;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            visibility: visible;
+            transition: all 0.8s ease-in-out;
+            /* 添加移动端兼容性修复 */
+            -webkit-box-pack: center;
+            -webkit-box-align: center;
+            -ms-flex-pack: center;
+            -ms-flex-align: center;
+        }
+
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-content {
+            text-align: center;
+            color: #333333;
+            /* 移除冲突的定位样式，使用纯flexbox居中 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 300px;
+            padding: 20px;
+            /* 移除绝对定位相关样式 */
+            /* position: relative;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); */
+        }
+
+        .loader-logo {
+            font-size: clamp(2rem, 8vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: pulseSimple 2s infinite;
+            /* 添加移动端优化 */
+            line-height: 1.2;
+            text-align: center;
+            width: 100%;
+        }
+
+        .loader-text {
+            font-size: clamp(0.9rem, 4vw, 1.2rem);
+            opacity: 0.8;
+            animation: fadeInOutSimple 2s infinite;
+            /* 添加移动端优化 */
+            line-height: 1.4;
+            text-align: center;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .app-container {
+            max-width: 2000px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 0.5s forwards;
+            /* 添加触摸滑动支持 */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 移动端汉堡菜单 */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 10px;
+            z-index: 1001;
+            width: 44px; /* 增大触摸区域 */
+            height: 44px;
+            justify-content: center;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-dark);
+            margin: 3px 0;
+            transition: var(--transition-fast);
+            border-radius: 2px;
+            transform-origin: center;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* 导航栏 - 移动端优化 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: rgba(245, 245, 247, 0.8); /* 苹果浅色模式背景 */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* 更细致的分割线 */
+            transition: var(--transition-smooth);
+            transform: translateY(-100%);
+            animation: slideDown 0.8s ease-out 1s forwards;
+            will-change: transform, background-color;
+            contain: layout style paint;
+        }
+
+        .navbar.scrolled {
+            background-color: rgba(245, 245, 247, 0.9);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* 更微妙的阴影 */
+            transform: translate3d(0, 0, 0);
+        }
+
+        .logo {
+            font-size: clamp(20px, 5vw, 24px);
+            font-weight: 600; /* 略微加粗 */
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            transition: var(--transition-fast);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo span {
+            color: var(--accent-primary);
+        }
+
+        .nav-links {
+            display: flex; /* 默认在桌面端显示 */
+            list-style: none;
+            transition: var(--transition-smooth);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .nav-links li {
+            margin: 0 var(--spacing-sm);
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .nav-links li:nth-child(1) { animation-delay: 1.2s; }
+        .nav-links li:nth-child(2) { animation-delay: 1.3s; }
+        .nav-links li:nth-child(3) { animation-delay: 1.4s; }
+        .nav-links li:nth-child(4) { animation-delay: 1.5s; }
+        .nav-links li:nth-child(5) { animation-delay: 1.6s; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 17px; /* 苹果导航链接常见字号 */
+            font-weight: 400; /* 苹果导航链接常见字重 */
+            position: relative;
+            transition: color 0.2s ease-in-out;
+            padding: 0; /* 移除原有padding，通过父元素控制高度 */
+            line-height: 56px; /* 使链接撑满导航栏高度 */
+            margin: 0 var(--spacing-sm);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .nav-icons i {
+            font-size: 17px; /* 调整图标大小 */
+            cursor: pointer;
+            transition: var(--transition-fast);
+            padding: 12px;
+            border-radius: 50%;
+            opacity: 0;
+            transform: scale(0);
+            animation: bounceIn 0.6s ease-out forwards;
+            color: var(--text-dark);
+        }
+
+        .nav-icons i:nth-child(1) { animation-delay: 1.7s; }
+        .nav-icons i:nth-child(2) { animation-delay: 1.8s; }
+        .nav-icons i:nth-child(3) { animation-delay: 1.9s; }
+
+        .nav-icons i:hover {
+            color: var(--accent-primary);
+            background-color: transparent; /* 移除背景色 */
+            transform: scale(1.1); /* 细微放大效果 */
+        }
+
+        /* 主视觉区域 - 使用指定的背景图片 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-md);
+            /* 简化背景为纯色叠加 */
+            background-image: 
+                linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+                url('https://wxydsb.github.io/bsmgzjsq/WechatIMG59.jpg');
+            background-size: cover;
+            background-position: center center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+            overflow: hidden;
+            /* 简洁流畅的缩放动画 */
+            animation: backgroundZoomSmooth 12s ease-in-out infinite alternate;
+        }
+
+        /* 优化背景缩放动画 - 使用transform替代filter */
+        @keyframes backgroundZoomSmooth {
+            0% {
+                transform: scale(1) translateZ(0);
+            }
+            100% {
+                transform: scale(1.02) translateZ(0);
+            }
+        }
+
+        /* 简化的光效叠加层 - 改为纯色 */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05); /* 改为纯色半透明叠加 */
+            z-index: 1;
+            animation: fadeGentle 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* 简化动画 - 改为简单的透明度变化 */
+        @keyframes fadeGentle {
+            0%, 100% {
+                opacity: 0.05;
+            }
+            50% {
+                opacity: 0.1;
+            }
+        }
+
+
+
+        @keyframes backgroundMove {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 100px 100px;
+            }
+        }
+
+        /* 优化内容区域 */
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: heroFadeInSmooth 1s ease-out 1.5s forwards;
+            padding: clamp(40px, 6vw, 60px);
+        }
+
+        /* 标题文字效果 - 简化版 */
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.1;
+            color: #ffffff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 段落文字优化 */
+        .hero p {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
+            max-width: 600px;
+            margin: 0 auto var(--spacing-md);
+            color: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 2.5s forwards;
+            line-height: 1.6;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            opacity: 0;
+            animation: fadeInUp 1s ease-out 3s forwards;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            padding: clamp(14px, 3vw, 16px) clamp(28px, 6vw, 36px);
+            border-radius: var(--border-radius-md); /* 苹果风格圆角 */
+            font-size: clamp(14px, 4vw, 16px);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out; /* 更快的过渡 */
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+            text-align: center;
+            /* 添加触摸反馈 */
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            touch-action: manipulation;
+            /* 增大触摸目标 */
+            min-height: 44px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: var(--transition-smooth);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #ffffff;
+            border: none;
+            backdrop-filter: blur(10px);
+            box-shadow: none;
+        }
+
+        .btn-primary:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+            transform: translate3d(0, -2px, 0) scale(1.01);
+            box-shadow: none;
+        }
+
+        /* 为"了解更多"和"设计故事"按钮添加特殊样式 */
+        .btn-primary.btn-dark-text {
+            color: #000000; /* 黑色字体 */
+        }
+
+        .btn-primary.btn-dark-text:hover {
+            color: #000000; /* 悬停时也保持黑色 */
+        }
+
+        .btn-secondary {
+            background-color: rgba(0, 0, 0, 0.05);
+            color: #ffffff;
+            border: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #ffffff;
+            transform: translate3d(0, -2px, 0) scale(1.01);
+        }
+
+
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+        }
+
+        /* 产品展示区 - 移动端优化 */
+        .section {
+            padding: clamp(var(--spacing-lg), 10vw, var(--spacing-xl)) var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            font-size: clamp(1.75rem, 6vw, 3rem);
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition-smooth);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1d1d1f;
+        }
+
+        .section-title.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto var(--spacing-xl);
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition-smooth) 0.2s;
+            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .section-subtitle.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-md);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+            position: relative;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+            touch-action: manipulation;
+        }
+
+        .product-card.animate {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .product-card::before {
+            display: none;
+        }
+
+        .product-card {
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .product-card:hover {
+            transform: translate3d(0, -8px, 0) scale(1.01);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card:hover::before {
+            opacity: 1;
+        }
+
+        .product-image {
+            height: clamp(250px, 40vw, 400px);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: var(--transition-smooth);
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0; /* 图片顶部圆角与卡片一致 */
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: var(--spacing-md) var(--spacing-sm); /* 调整内边距 */
+            position: relative;
+            z-index: 2;
+        }
+
+        .product-category {
+            color: #6e6e73;
+            font-size: 13px;
+            margin-bottom: 8px;
+            transition: var(--transition-fast);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .product-card:hover .product-category {
+            color: var(--accent-primary);
+        }
+
+        .product-name {
+            font-size: clamp(17px, 4vw, 19px);
+            font-weight: 500;
+            margin-bottom: 8px;
+            transition: var(--transition-fast);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1d1d1f;
+        }
+
+        .product-price {
+            font-size: clamp(14px, 4vw, 18px);
+            font-weight: 600;
+            color: var(--accent-primary);
+            transition: var(--transition-fast);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* 特色区域 - 移动端优化 */
+        .feature-section {
+            display: flex;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto var(--spacing-xl);
+            gap: var(--spacing-md); /* 调整间距 */
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: var(--transition-smooth);
+        }
+
+        .feature-section.animate {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .feature-section:nth-child(even) {
+            transform: translateX(50px);
+        }
+
+        .feature-section:nth-child(even).animate {
+            transform: translateX(0);
+        }
+
+        .feature-content {
+            flex: 1;
+            padding: var(--spacing-md);
+        }
+
+        .feature-image {
+            flex: 1;
+            height: clamp(300px, 50vw, 500px);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            background-size: cover;
+            background-position: center;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .feature-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .feature-section:hover .feature-image {
+            transform: translate3d(0, 0, 0) scale(1.02);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-section:hover .feature-image::before {
+            opacity: 1;
+        }
+
+        .feature-title {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #1d1d1f;
+        }
+
+        .feature-content p {
+            font-size: clamp(0.9rem, 3.5vw, 1rem);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* 页脚 - 移动端优化 */
+        .footer {
+            background-color: #1d1d1f;
+            color: #f5f5f7;
+            padding: var(--spacing-lg) var(--spacing-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #333333;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .footer-column {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: var(--transition-smooth);
+        }
+
+        .footer-column.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-column h3 {
+            font-size: clamp(16px, 4vw, 18px);
+            margin-bottom: var(--spacing-sm);
+            position: relative;
+            padding-bottom: 10px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: 600;
+            color: #f5f5f7;
+        }
+
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #666666;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-column:hover h3:after {
+            width: 60px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+            transform: translateX(-10px);
+            opacity: 0;
+            transition: var(--transition-fast);
+        }
+
+        .footer-column.animate .footer-links li {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .footer-links li:nth-child(1) { transition-delay: 0.1s; }
+        .footer-links li:nth-child(2) { transition-delay: 0.2s; }
+        .footer-links li:nth-child(3) { transition-delay: 0.3s; }
+        .footer-links li:nth-child(4) { transition-delay: 0.4s; }
+        .footer-links li:nth-child(5) { transition-delay: 0.5s; }
+
+        .footer-links a {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #a1a1a6;
+            font-size: 14px;
+            text-decoration: none;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #333333;
+            opacity: 0;
+            transition: var(--transition-fast);
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px) scale(1.1);
+        }
+
+        .social-links a:hover::before {
+            opacity: 1;
+        }
+
+        .social-links a i {
+            position: relative;
+            z-index: 1;
+            color: #a1a1a6;
+        }
+
+        .social-links a i:hover {
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: var(--spacing-xl);
+            color: #86868b;
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: var(--spacing-xl);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition-smooth);
+            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .copyright.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 动画关键帧 - 简化版 */
+        @keyframes pulseSimple {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes fadeInOutSimple {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+        }
+
+        /* 优化淡入动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translate3d(0, 30px, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* 优化弹跳动画 */
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale3d(0, 0, 1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale3d(1.1, 1.1, 1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale3d(1, 1, 1);
+            }
+        }
+
+
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes heroFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 简化的内容淡入动画 */
+        @keyframes heroFadeInSmooth {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floatImage {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.9) rotate(0deg); }
+            50% { transform: translate(-50%, -50%) scale(0.95) rotate(1deg); }
+        }
+
+
+
+        /* 移动端特定修复 */
+        @media (max-width: 768px) {
+            .page-loader {
+                /* 强制使用flexbox居中 */
+                display: -webkit-box;
+                display: -ms-flexbox;
+                display: flex;
+                -webkit-box-orient: vertical;
+                -webkit-box-direction: normal;
+                -ms-flex-direction: column;
+                flex-direction: column;
+                -webkit-box-pack: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+                -webkit-box-align: center;
+                -ms-flex-align: center;
+                align-items: center;
+                /* 确保全屏覆盖 */
+                min-height: 100vh;
+                min-height: -webkit-fill-available;
+            }
+            
+            .loader-content {
+                /* 移动端重置定位 */
+                position: static;
+                left: auto;
+                top: auto;
+                transform: none;
+                /* 确保内容居中 */
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                width: 90%;
+                max-width: 280px;
+                margin: 0 auto;
+            }
+            
+            .loader-logo {
+                font-size: clamp(1.8rem, 10vw, 2.5rem);
+                margin-bottom: 15px;
+            }
+            
+            .loader-text {
+                font-size: clamp(0.8rem, 5vw, 1.1rem);
+            }
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .hero {
+                background-attachment: scroll; /* 移动端禁用fixed */
+                animation-duration: 30s; /* 延长动画时间减少性能消耗 */
+            }
+            
+            .hero::before {
+                animation-duration: 20s; /* 简化移动端动画 */
+            }
+            
+            .hero-content {
+                backdrop-filter: blur(15px); /* 减少模糊强度 */
+                -webkit-backdrop-filter: blur(15px);
+                padding: clamp(30px, 5vw, 40px);
+            }
+        }
+
+        /* 高性能设备增强效果 */
+        @media (min-width: 1200px) and (min-height: 800px) {
+            .hero {
+                background-attachment: fixed;
+            }
+            
+            .hero::before {
+                background: rgba(255, 255, 255, 0.08); /* 改为纯色 */
+            }
+        }
+
+        /* 移动端响应式设计 */
+        @media (max-width: 768px) {
+            :root {
+                --spacing-xs: 6px;
+                --spacing-sm: 12px;
+                --spacing-md: 24px;
+                --spacing-lg: 48px;
+                --spacing-xl: 80px;
+            }
+
+            body {
+                /* 确保移动端滑动流畅 */
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+            }
+
+            .navbar {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .mobile-menu-toggle {
+                display: flex; /* 在移动端显示汉堡菜单按钮 */
+            }
+
+            .nav-links {
+                position: fixed; /* 或者 absolute，取决于您的布局需求 */
+                top: 0; /* 或者导航栏的高度 */
+                left: -100%; /* 初始状态隐藏在屏幕左侧 */
+                width: 80%; /* 或者您希望的菜单宽度 */
+                height: 100vh;
+                background-color: rgba(255, 255, 255, 0.95); /* 苹果风格的半透明背景 */
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                flex-direction: column;
+                align-items: flex-start; /* 左对齐菜单项 */
+                padding-top: 80px; /* 为导航栏留出空间 */
+                padding-left: var(--spacing-md);
+                box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+                transition: left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 平滑过渡 */
+                z-index: 999; /* 确保在其他内容之上 */
+                overflow-y: auto; /* 如果菜单项过多，允许滚动 */
+            }
+
+            .nav-links.active {
+                left: 0; /* active 状态时滑出菜单 */
+            }
+
+            .nav-links li {
+                margin: var(--spacing-sm) 0; /* 调整移动端菜单项间距 */
+                width: 100%;
+            }
+
+            .nav-links a {
+                padding: var(--spacing-sm) 0;
+                font-size: 18px; /* 增大移动端字体 */
+                width: 100%;
+                display: block;
+            }
+
+            .nav-links a:after {
+                /* 确保这个伪元素不显示，或者直接删除此规则块 */
+                display: none; 
+                /* 或者移除以下内容：
+                content: '';
+                position: absolute;
+                bottom: 10px;
+                left: 50%;
+                width: 0;
+                height: 1.5px; 
+                background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+                transition: var(--transition-fast);
+                transform: translateX(-50%);
+                */
+            }
+
+            .nav-icons {
+                /* 在移动端可能需要调整图标的显示或隐藏 */
+                /* display: none; */ /* 如果空间不足，可以考虑隐藏部分图标 */
+            }
+
+            .nav-icons i {
+                padding: 8px;
+                font-size: 16px;
+            }
+
+            .hero {
+                padding: calc(70px + var(--spacing-lg)) var(--spacing-md) var(--spacing-lg);
+                min-height: 100vh;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-sm);
+                /* 添加滑动支持 */
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .feature-section {
+                flex-direction: column;
+                gap: var(--spacing-md);
+                transform: translateY(30px);
+            }
+
+            .feature-section.animate {
+                transform: translateY(0);
+            }
+
+            .feature-section:nth-child(even) {
+                transform: translateY(30px);
+            }
+
+            .feature-section:nth-child(even).animate {
+                transform: translateY(0);
+            }
+
+            .feature-content {
+                order: 2;
+                padding: var(--spacing-sm);
+            }
+
+            .feature-image {
+                order: 1;
+                width: 100%;
+                height: 250px;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-md);
+                text-align: center;
+            }
+
+            .footer-column {
+                margin-bottom: var(--spacing-sm);
+            }
+
+            .footer-column h3 {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+
+            .footer-links li {
+                margin-bottom: 6px;
+            }
+
+            .footer-links a {
+                font-size: 12px;
+            }
+
+            .footer-column:first-child {
+                grid-column: 1 / -1;
+                margin-bottom: var(--spacing-md);
+            }
+
+            .social-links {
+                justify-content: center;
+                margin-top: 15px;
+            }
+        }
+
+        body.no-scroll {
+            overflow: hidden; /* 当移动菜单打开时，禁止body滚动 */
+        }
+
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            .loader-content {
+                width: 85%;
+                max-width: 250px;
+                padding: 15px;
+            }
+            
+            .loader-logo {
+                font-size: clamp(1.5rem, 12vw, 2.2rem);
+                margin-bottom: 12px;
+            }
+            
+            .loader-text {
+                font-size: clamp(0.7rem, 6vw, 1rem);
+            }
+        }
+
+        /* 超小屏幕优化 */
+        @media (max-width: 480px) {
+            :root {
+                --spacing-xs: 4px;
+                --spacing-sm: 8px;
+                --spacing-md: 16px;
+                --spacing-lg: 32px;
+                --spacing-xl: 48px;
+            }
+
+            .navbar {
+                padding: 12px 16px;
+            }
+
+            .hero {
+                padding: calc(70px + var(--spacing-md)) 16px var(--spacing-md);
+            }
+
+            .section {
+                padding: var(--spacing-lg) 16px;
+            }
+
+            .products-grid {
+                gap: 16px;
+            }
+
+            .product-image {
+                height: 200px;
+            }
+
+            .feature-image {
+                height: 200px;
+            }
+
+            .footer {
+                padding: var(--spacing-lg) 16px;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+                text-align: center;
+            }
+
+            .footer-column h3 {
+                font-size: 12px;
+                margin-bottom: 6px;
+            }
+
+            .footer-links a {
+                font-size: 10px;
+            }
+
+            .footer-links li {
+                margin-bottom: 4px;
+            }
+
+            .footer-column:first-child {
+                grid-column: 1 / -1;
+                margin-bottom: var(--spacing-sm);
+            }
+        }
+
+        /* 横屏模式优化 */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .hero {
+                min-height: 100vh;
+                padding: calc(70px + 20px) var(--spacing-md) 20px;
+            }
+
+            .hero h1 {
+                font-size: clamp(1.5rem, 6vw, 2.5rem);
+            }
+
+            .hero p {
+                font-size: clamp(0.8rem, 3vw, 1rem);
+            }
+        }
+
+        /* 触摸设备特定样式 */
+        .touch-device .product-card:hover {
+            transform: none;
+        }
+
+        .touch-device .btn:hover {
+            transform: none;
+        }
+
+        /* 添加触摸反馈动画 */
+        .touch-feedback {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+        
+        /* 添加菜单遮罩层 */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 移除悬停效果，改为活跃状态效果 */
+            .btn:hover,
+            .product-card:hover,
+            .feature-section:hover .feature-image,
+            .nav-links a:hover,
+            .nav-icons i:hover,
+            .social-links a:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            
+            /* 添加活跃状态反馈 */
+            .btn:active,
+            .product-card:active,
+            .nav-links a:active,
+            .nav-icons i:active,
+            .social-links a:active {
+                transform: scale(0.97);
+                transition: transform 0.1s ease;
+            }
+            
+            /* 增大触摸目标 */
+            .nav-links a,
+            .footer-links a,
+            .nav-icons i,
+            .social-links a {
+                padding: 15px;
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+            }
+            
+            /* 改进滚动体验 */
+            .products-grid,
+            .feature-section,
+            .footer-content {
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #666666;
+        }
+
+        /* 二维码弹窗样式 */
+        .qr-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* 视频弹窗样式 */
+        .video-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .video-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .video-content {
+            background: #000;
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 800px;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .video-modal.show .video-content {
+            transform: scale(1);
+        }
+
+        .video-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .video-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .video-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+
+        .video-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .video-player {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-player video {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 10px;
+        }
+
+        /* 移动端视频弹窗优化 */
+        @media (max-width: 768px) {
+            .video-content {
+                width: 95vw;
+                padding: 15px;
+                margin: 0 auto;
+                max-height: 95vh;
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            
+            .video-modal.show .video-content {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            .video-player {
+                flex: 1;
+                min-height: 200px;
+            }
+
+            .video-player video {
+                max-height: 60vh;
+            }
+
+            .video-title {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-content {
+                width: 90vw;
+                padding: 10px;
+                margin: 0 auto;
+            }
+
+            .video-player {
+                min-height: 180px;
+            }
+
+            .video-player video {
+                max-height: 50vh;
+            }
+
+            .video-title {
+                font-size: 16px;
+            }
+        }
+
+        /* 横屏模式优化 */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .video-content {
+                max-height: 95vh;
+                max-width: 90vw;
+            }
+
+            .video-player video {
+                max-height: 70vh;
+                max-width: 85vw;
+            }
+        }
+
+        .qr-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .qr-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .qr-modal.show .qr-content {
+            transform: scale(1);
+        }
+        
+        /* 移动端弹窗优化 */
+        @media (max-width: 768px) {
+            .qr-content,
+            .video-content {
+                width: 90%;
+                padding: 15px;
+                border-radius: var(--border-radius-md);
+                margin: 0 auto;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            
+            .qr-modal.show .qr-content,
+            .video-modal.show .video-content {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            
+            .video-player {
+                height: auto;
+                max-height: 60vh;
+            }
+            
+            .qr-code {
+                width: 180px;
+                height: 180px;
+                margin: 0 auto 15px;
+            }
+            
+            .qr-title,
+            .video-title {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            
+            .qr-instruction {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+            
+            .qr-close,
+            .video-close {
+                min-height: 44px; /* 增大触摸目标 */
+                min-width: 44px;
+            }
+        }
+
+        .qr-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-code img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-instruction {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .qr-close {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .qr-close:hover {
+            background: #0062c4;
+            transform: translateY(-2px);
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            .qr-content {
+                padding: 30px 20px;
+            }
+
+            .qr-code {
+                width: 180px;
+                height: 180px;
+            }
+
+            .qr-title {
+                font-size: 20px;
+            }
+
+            .qr-instruction {
+                font-size: 14px;
+            }
+        }
+
+        /* iOS Safari 特定修复 */
+        @supports (-webkit-touch-callout: none) {
+            .page-loader {
+                /* iOS Safari 视口高度修复 */
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+        }
+
+        /* 性能优化 */
+        .hero-image,
+        .product-image,
+        .feature-image {
+            will-change: transform;
+        }
+
+        .btn,
+        .product-card,
+        .nav-links a {
+            will-change: transform;
+        }
+        
+        /* 减少移动端动画复杂度 */
+        @media (max-width: 768px) {
+            /* 简化动画，减少性能消耗 */
+            .hero-image,
+            .product-card::before,
+            .feature-image::before {
+                animation: none;
+            }
+            
+            /* 减少动画持续时间 */
+            .nav-links li,
+            .nav-icons i,
+            .hero-content,
+            .hero p,
+            .hero-buttons {
+                animation-duration: 0.5s;
+            }
+            
+            /* 使用transform替代opacity+transform组合 */
+            .section-title,
+            .section-subtitle,
+            .product-card,
+            .feature-section,
+            .footer-column {
+                opacity: 1;
+                transform: translateY(20px);
+                transition: transform 0.5s ease-out;
+            }
+            
+            .section-title.animate,
+            .section-subtitle.animate,
+            .product-card.animate,
+            .feature-section.animate,
+            .footer-column.animate {
+                transform: translateY(0);
+            }
+            
+            /* 使用will-change提示浏览器 */
+            .product-card,
+            .feature-image,
+            .btn {
+                will-change: transform;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面加载动画 -->
+    <div class="page-loader">
+        <div class="loader-content">
+            <div class="loader-logo">BSM.</div>
+            <div class="loader-text">正在加载精彩内容...</div>
+        </div>
+    </div>
+
+    <!-- 二维码弹窗 -->
+    <div class="qr-modal" id="qrModal">
+        <div class="qr-content">
+            <h3 class="qr-title">探索BSM系列</h3>
+            <div class="qr-code">
+                <img src="https://wxydsb.github.io/bsmgzjsq/qrcode_for_gh_2ecdf1152411_258.jpg" alt="BSM系列二维码" id="qrCodeImage">
+            </div>
+            <p class="qr-instruction">长按保存并用微信识别二维码</p>
+            <button class="qr-close" onclick="closeQRModal()">关闭</button>
+        </div>
+    </div>
+
+    <!-- 视频弹窗 -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-content">
+            <div class="video-header">
+                <h3 class="video-title">BSM品牌影片</h3>
+                <button class="video-close" onclick="closeVideoModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="video-player">
+                <iframe id="brandVideo" 
+                        src="https://open.douyin.com/player/video?vid=7490175997879258431&autoplay=0" 
+                        width="100%" 
+                        height="500" 
+                        frameborder="0" 
+                        referrerpolicy="unsafe-url"
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="logo">BSM<span>.</span></div>
+            <ul class="nav-links">
+                <li><a href="#">首页</a></li>
+                <li><a href="#">系列</a></li>
+                <li><a href="#">女装</a></li>
+                <li><a href="#">配饰</a></li>
+                <li><a href="#">关于</a></li>
+            </ul>
+            <div class="nav-icons">
+                <i class="fas fa-search"></i>
+                <i class="fas fa-user"></i>
+                <i class="fas fa-shopping-bag"></i>
+            </div>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+
+        <!-- 主视觉区域 -->
+        <section class="hero">
+            <!-- 移除旧的img标签，背景将在CSS中设置 -->
+            <!-- <img data-src="your-apple-style-background.jpg" alt="时尚背景" class="hero-image lazy-image"> -->
+            <div class="hero-overlay"></div> <!-- 这个叠加层可以用来调整背景图片的亮度和对比度，或者添加渐变效果 -->
+            <div class="hero-content">
+                <h1>BSM美学研究中心</h1>
+                <p>BSM啵斯猫美学研究所融合前沿科技与精致工艺，打造具有未来感的日常穿着体验。每一件作品都经过精心设计，满足现代生活需求。</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">探索系列 <i class="fas fa-arrow-right"></i></button>
+                    <button class="btn btn-secondary">观看影片 <i class="fas fa-play-circle"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 服装做工 -->
+        <section class="section">
+            <h2 class="section-title">精湛做工工艺</h2>
+            <p class="section-subtitle">每一针每一线都体现着我们对品质的极致追求<br>精选优质材料，打造卓越品质体验</p>
+            
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image lazy-image" data-src="https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"></div>
+                    <div class="product-info">
+                        <div class="product-category">面料工艺</div>
+                        <h3 class="product-name">精品棉花纤维</h3>
+                        <div class="product-price">100%优质</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image lazy-image" data-src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"></div>
+                    <div class="product-info">
+                        <div class="product-category">缝制工艺</div>
+                        <h3 class="product-name">双重锁边技术</h3>
+                        <div class="product-price">匠心制作</div>
+                    </div>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-image lazy-image" data-src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"></div>
+                    <div class="product-info">
+                        <div class="product-category">品质检测</div>
+                        <h3 class="product-name">严格质量把控</h3>
+                        <div class="product-price">层层筛选</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 特色区域 -->
+        <section class="section">
+            <div class="feature-section">
+                <div class="feature-content">
+                    <h2 class="feature-title">匠心工艺 品质保证</h2>
+                    <p>我们精选来自新疆优质产区的长绒棉花，纤维长度超过35mm，确保面料的柔软度和耐用性。每一件服装都经过严格的质量检测。</p>
+                    <p>采用传统手工与现代工艺相结合的制作方式，双重锁边技术确保每一处缝线都牢固耐用。精密的裁剪工艺让每件衣服都拥有完美的版型。</p>
+                    <p>从原料采购到成品出厂，我们建立了完整的质量追溯体系，确保每一件产品都达到BSM啵斯猫美学研究所的高品质标准。</p>
+                    <button class="btn btn-primary btn-dark-text" style="margin-top: 20px;">了解更多</button>
+                </div>
+                <div class="feature-image lazy-image" data-src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"></div>
+            </div>
+            
+            <div class="feature-section">
+                <div class="feature-image lazy-image" data-src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"></div>
+                <div class="feature-content">
+                    <h2 class="feature-title">我们的设计理念</h2>
+                    <p>BSM啵斯猫美学研究所秉承"简约而不简单"的设计哲学，每一件作品都融入了独特的美学思考和创新设计元素。</p>
+                    <p>我们追求线条的流畅性与结构的完美平衡，通过精致的细节处理和前卫的剪裁手法，创造出既具有时尚感又富有艺术气息的服装作品。</p>
+                    <p>设计团队深入研究当代生活方式，将功能性与美观性完美结合，让每一件服装都成为穿着者个性与品味的完美体现。</p>
+                    <button class="btn btn-primary btn-dark-text" style="margin-top: 20px;" onclick="showQRModal()">设计故事</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>BSM啵斯猫美学研究所</h3>
+                    <p>重新定义未来着装，融合科技与设计，打造可持续的时尚未来。</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-weibo"></i></a>
+                        <a href="#"><i class="fab fa-weixin"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>购物</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">所有产品</a></li>
+                        <li><a href="#">最新系列</a></li>
+                        <li><a href="#">畅销单品</a></li>
+                        <li><a href="#">特别优惠</a></li>
+                        <li><a href="#">礼品卡</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>支持</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">配送信息</a></li>
+                        <li><a href="#">退换政策</a></li>
+                        <li><a href="#">尺码指南</a></li>
+                        <li><a href="#">常见问题</a></li>
+                        <li><a href="#">联系我们</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>关于我们</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">品牌故事</a></li>
+                        <li><a href="#">可持续性</a></li>
+                        <li><a href="#">技术研发</a></li>
+                        <li><a href="#">职业发展</a></li>
+                        <li><a href="https://m.amap.com/poi/detail?__p=B0JBDAVT05%2C29.562100458289038%2C106.58450603485105%2C%E6%B3%A2%E6%96%AF%E7%8C%AB(%E5%A4%A7%E8%9E%8D%E6%B1%87%E5%BA%97)%2C%E6%9C%9D%E5%A4%A9%E9%97%A8%E5%A4%A7%E8%9E%8D%E6%B1%87A%E5%8C%BA%E4%BA%8C%E6%A5%BC2014A%E6%B3%A2%E6%96%AF%E7%8C%AB&src=app_share&userRelationToken=f76c0e20476111f099d600163e16082d1&share_type=url&share_from=poi_poi&share_from_type=AJX&share_bizParams=%257B%2522poiid%2522%253A%2522B0JBDAVT05%2522%252C%2522name%2522%253A%2522%25E6%25B3%25A2%25E6%2596%25AF%25E7%258C%25AB(%25E5%25A4%25A7%25E8%259E%258D%25E6%25B1%2587%25E5%25BA%2597)%2522%252C%2522address%2522%253A%2522%25E6%259C%259D%25E5%25A4%25A9%25E9%2597%25A8%25E5%25A4%25A7%25E8%259E%258D%25E6%25B1%2587A%25E5%258C%25BA%25E4%25BA%258C%25E6%25A5%25BC2014A%25E6%25B3%25A2%25E6%2596%25AF%25E7%258C%25AB%2522%252C%2522new_type%2522%253A%2522061100%2522%252C%2522atag_cid%2522%253A%2522621396%253B621397%253B621398%2522%252C%2522x%2522%253A213692896%252C%2522y%2522%253A111126024%252C%2522lon%2522%253A%25" target="_blank">门店位置</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 BSM啵斯猫美学研究所 科技有限公司。保留所有权利。</p>
+                <p>隐私政策 | 使用条款 | 法律信息 | 网站地图</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // 检测设备类型
+        function detectDeviceType() {
+            const isTouchDevice = ('ontouchstart' in window) || 
+                                (navigator.maxTouchPoints > 0) || 
+                                (navigator.msMaxTouchPoints > 0);
+            
+            if (isTouchDevice) {
+                document.body.classList.add('touch-device');
+                enableTouchOptimizations();
+            } else {
+                document.body.classList.add('mouse-device');
+                enableMouseOptimizations();
+            }
+        }
+
+        // 触摸设备优化
+        function enableTouchOptimizations() {
+            // 减少动画复杂度
+            document.querySelectorAll('.hero-image, .product-card, .feature-image').forEach(el => {
+                el.style.willChange = 'auto';
+            });
+            
+            // 优化滚动性能
+            window.addEventListener('scroll', () => {}, { passive: true });
+            
+            // 添加触摸反馈
+            document.addEventListener('touchstart', function(e) {
+                const target = e.target.closest('.btn, .product-card, .nav-links a, .social-links a');
+                if (target) {
+                    target.classList.add('touch-feedback');
+                }
+            }, { passive: true });
+            
+            document.addEventListener('touchend', function(e) {
+                const target = e.target.closest('.btn, .product-card, .nav-links a, .social-links a');
+                if (target) {
+                    setTimeout(() => {
+                        target.classList.remove('touch-feedback');
+                    }, 150);
+                }
+            }, { passive: true });
+        }
+
+        // 鼠标设备优化
+        function enableMouseOptimizations() {
+            // 启用更复杂的悬停效果
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', () => {
+                    button.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                button.addEventListener('mouseleave', () => {
+                    button.style.transform = 'translateY(0) scale(1)';
+                });
+                
+                button.addEventListener('mousedown', () => {
+                    button.style.transform = 'translateY(-2px) scale(0.98)';
+                });
+                
+                button.addEventListener('mouseup', () => {
+                    button.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+            });
+        }
+        
+        // 图片懒加载
+        function setupLazyLoading() {
+            const lazyImages = document.querySelectorAll('.lazy-image');
+            
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            const src = img.getAttribute('data-src');
+                            img.style.backgroundImage = `url(${src})`;
+                            img.classList.add('loaded');
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                }, { rootMargin: '50px' });
+                
+                lazyImages.forEach(img => {
+                    imageObserver.observe(img);
+                });
+            } else {
+                // 回退方案
+                lazyImages.forEach(img => {
+                    const src = img.getAttribute('data-src');
+                    img.style.backgroundImage = `url(${src})`;
+                    img.classList.add('loaded');
+                });
+            }
+        }
+
+        // 二维码弹窗功能
+        function showQRModal() {
+            const modal = document.getElementById('qrModal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeQRModal() {
+            const modal = document.getElementById('qrModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // 视频弹窗功能
+        function showVideoModal() {
+            const modal = document.getElementById('videoModal');
+            
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('brandVideo');
+            
+            // 停止视频播放
+            // 通过重置iframe的src属性来停止视频播放
+            const videoSrc = iframe.src;
+            iframe.src = '';
+            setTimeout(() => {
+                iframe.src = videoSrc;
+            }, 100);
+            
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        // 点击模态框背景关闭
+        document.getElementById('qrModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeQRModal();
+            }
+        });
+
+        // 点击背景关闭视频弹窗
+        document.getElementById('videoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideoModal();
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeQRModal();
+                const videoModal = document.getElementById('videoModal');
+                if (videoModal.classList.contains('show')) {
+                    closeVideoModal();
+                }
+            }
+        });
+
+        // 页面加载完成后的动画控制
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载动画
+            setTimeout(() => {
+                document.querySelector('.page-loader').classList.add('hidden');
+            }, 2000);
+
+            // 为探索系列按钮添加点击事件
+            const exploreButton = document.querySelector('.hero-buttons .btn-primary');
+            if (exploreButton) {
+                exploreButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showQRModal();
+                });
+            }
+
+            // 为观看影片按钮添加点击事件
+            const watchVideoBtn = document.querySelector('.btn-secondary');
+            if (watchVideoBtn) {
+                watchVideoBtn.addEventListener('click', showVideoModal);
+            }
+
+            // 移动端菜单控制
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            const body = document.body;
+
+            if (mobileMenuToggle && navLinks) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    mobileMenuToggle.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                    body.classList.toggle('no-scroll'); // 用于阻止背景滚动
+                });
+            }
+
+            // 点击导航链接后关闭移动菜单 (如果需要)
+            const navLinkItems = document.querySelectorAll('.nav-links a');
+            if (navLinkItems.length > 0 && navLinks && mobileMenuToggle) {
+                navLinkItems.forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (navLinks.classList.contains('active')) {
+                            navLinks.classList.remove('active');
+                            mobileMenuToggle.classList.remove('active');
+                            body.classList.remove('no-scroll');
+                        }
+                    });
+                });
+            }
+
+            // 改进滚动性能
+            let ticking = false;
+            function updateOnScroll() {
+                // 现有滚动逻辑
+                const navbar = document.querySelector('.navbar');
+                const currentScrollY = window.scrollY;
+                
+                if (currentScrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+                
+                ticking = false;
+            }
+            
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    requestAnimationFrame(updateOnScroll);
+                    ticking = true;
+                }
+            }, { passive: true });
+            
+            // 创建交叉观察器用于滚动动画
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                        
+                        // 为产品卡片添加延迟动画
+                        if (entry.target.classList.contains('product-card')) {
+                            const cards = entry.target.parentElement.querySelectorAll('.product-card');
+                            cards.forEach((card, index) => {
+                                setTimeout(() => {
+                                    card.classList.add('animate');
+                                }, index * 200);
+                            });
+                        }
+                        
+                        // 为页脚列添加延迟动画
+                        if (entry.target.classList.contains('footer-column')) {
+                            const columns = document.querySelectorAll('.footer-column');
+                            columns.forEach((column, index) => {
+                                setTimeout(() => {
+                                    column.classList.add('animate');
+                                }, index * 150);
+                            });
+                        }
+                    }
+                });
+            }, observerOptions);
+            
+            // 观察需要动画的元素
+            const animateElements = document.querySelectorAll(
+                '.section-title, .section-subtitle, .product-card, .feature-section, .footer-column, .copyright'
+            );
+            
+            animateElements.forEach(element => {
+                observer.observe(element);
+            });
+            
+            // 按钮增强交互效果（仅在非触摸设备上）
+            if (window.matchMedia('(hover: hover)').matches) {
+                const buttons = document.querySelectorAll('.btn');
+                buttons.forEach(button => {
+                    button.addEventListener('mouseenter', () => {
+                        button.style.transform = 'translateY(-5px) scale(1.02)';
+                    });
+                    
+                    button.addEventListener('mouseleave', () => {
+                        button.style.transform = 'translateY(0) scale(1)';
+                    });
+                    
+                    button.addEventListener('mousedown', () => {
+                        button.style.transform = 'translateY(-2px) scale(0.98)';
+                    });
+                    
+                    button.addEventListener('mouseup', () => {
+                        button.style.transform = 'translateY(-5px) scale(1.02)';
+                    });
+                });
+            }
+            
+
+            
+            // 平滑滚动增强
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // 性能优化：节流滚动事件
+            let parallaxTicking = false;
+            
+            function updateParallaxEffects() {
+                // 视差效果（仅在桌面端）
+                if (window.innerWidth > 768) {
+                    const scrolled = window.pageYOffset;
+                    const heroImage = document.querySelector('.hero-image');
+                    if (heroImage) {
+                        heroImage.style.transform = `translate(-50%, -50%) scale(0.9) translateY(${scrolled * 0.3}px)`;
+                    }
+                }
+                
+                parallaxTicking = false;
+            }
+            
+            window.addEventListener('scroll', () => {
+                if (!parallaxTicking) {
+                    requestAnimationFrame(updateParallaxEffects);
+                    parallaxTicking = true;
+                }
+            });
+
+            // 窗口大小改变时的处理
+            window.addEventListener('resize', () => {
+                // 关闭移动端菜单
+                if (window.innerWidth > 768) {
+                    if (mobileMenuToggle) mobileMenuToggle.classList.remove('active');
+                    if (navLinks) navLinks.classList.remove('active');
+                    document.body.style.position = '';
+                    document.body.style.top = '';
+                    document.body.style.width = '';
+                }
+                
+                // 在窗口大小改变时暂停视频
+                const video = document.getElementById('brandVideo');
+                if (video && !video.paused) {
+                    video.pause();
+                }
+            });
+
+            // 触摸设备优化 - 重写这部分
+            if ('ontouchstart' in window) {
+                // 为触摸设备添加特殊处理
+                document.body.classList.add('touch-device');
+                
+                // 移除阻止滑动的代码，改为优化触摸体验
+                let touchStartY = 0;
+                let touchEndY = 0;
+                
+                // 添加触摸反馈
+                document.addEventListener('touchstart', function(e) {
+                    touchStartY = e.changedTouches[0].screenY;
+                    
+                    // 为可交互元素添加触摸反馈
+                    const target = e.target.closest('.btn, .product-card, .nav-links a');
+                    if (target) {
+                        target.classList.add('touch-feedback');
+                    }
+                }, { passive: true });
+                
+                document.addEventListener('touchend', function(e) {
+                    touchEndY = e.changedTouches[0].screenY;
+                    
+                    // 移除触摸反馈
+                    const target = e.target.closest('.btn, .product-card, .nav-links a');
+                    if (target) {
+                        setTimeout(() => {
+                            target.classList.remove('touch-feedback');
+                        }, 150);
+                    }
+                }, { passive: true });
+                
+                // 优化iOS Safari的滚动体验
+                document.addEventListener('touchmove', function(e) {
+                    // 只在特定情况下阻止默认行为（如缩放）
+                    if (e.touches.length > 1) {
+                        e.preventDefault();
+                    }
+                }, { passive: false });
+                
+                // 防止双击缩放（仅在必要时）
+                let lastTouchEnd = 0;
+                document.addEventListener('touchend', function(e) {
+                    const now = (new Date()).getTime();
+                    if (now - lastTouchEnd <= 300) {
+                        e.preventDefault();
+                    }
+                    lastTouchEnd = now;
+                }, false);
+                
+                // 移动端视频播放优化
+                const video = document.getElementById('brandVideo');
+                if (video) {
+                    video.addEventListener('loadstart', function() {
+                        // 移动端视频加载优化
+                        this.preload = 'metadata';
+                    });
+                    
+                    video.addEventListener('play', function() {
+                        // 播放时隐藏其他UI元素以获得更好的体验
+                        document.querySelector('.video-header').style.opacity = '0.8';
+                    });
+                    
+                    video.addEventListener('pause', function() {
+                        // 暂停时恢复UI元素
+                        document.querySelector('.video-header').style.opacity = '1';
+                    });
+                }
+            }
+            
+            // 设置图片懒加载
+            setupLazyLoading();
+        });
+    </script>
+</body>
+</html>
