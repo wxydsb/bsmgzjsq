@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>圆桌摄影 - 专业摄影服务</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* 重置样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #1d1d1f;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        
+        /* 页面加载动画 */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: #0071e3;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .page-loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        /* 导航栏样式 */
+        nav {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        
+        nav.nav-hidden {
+            transform: translateY(-100%);
+        }
+        
+        .nav-container {
+            max-width: 980px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 22px;
+        }
+        
+        .logo {
+            color: #f5f5f7;
+            font-size: 21px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .logo:hover {
+            opacity: 0.8;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 30px;
+        }
+        
+        .nav-links a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-size: 14px;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.2s;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+        
+        /* 汉堡菜单 */
+        .menu-toggle {
+            display: none;
+            color: #f5f5f7;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .menu-toggle:hover {
+            transform: rotate(90deg);
+        }
+        
+        /* 英雄区域样式 */
+        .hero {
+            height: 100vh;
+            background: url('https://images.unsplash.com/photo-1452587925148-ce544e77e70d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') no-repeat center center;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            padding-top: 44px; /* 导航栏高度 */
+        }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+        
+        .hero-content {
+            z-index: 2;
+            max-width: 800px;
+            padding: 0 20px;
+            animation: fadeInUp 1.2s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        
+        .hero p {
+            font-size: 26px;
+            font-weight: 400;
+            margin-bottom: 40px; /* 增加与按钮的间距 */
+        }
+
+        /* 英雄区域按钮样式 */
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero-button {
+            --button-background: rgba(255, 255, 255, 0.25); /* 半透明白色背景 */
+            --button-hover-background: rgba(255, 255, 255, 0.5); /* 悬停时更不透明 */
+            --button-color: #f5f5f7; /* 保持白色文字 */
+            
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 9999px; /* 胶囊形状 */
+            background-color: var(--button-background);
+            color: var(--button-color);
+            text-decoration: none;
+            font-size: 17px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.4); /* 添加微弱的边框 */
+            
+            /* 毛玻璃效果 */
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            
+            /* 更新 transition 以实现Q弹效果 */
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            
+            position: relative;
+            overflow: hidden;
+            transform: translateY(0);
+            opacity: 0;
+            animation: buttonFadeInUp 0.8s forwards;
+            animation-delay: calc(var(--button-index) * 0.15s + 0.5s);
+        }
+
+        @keyframes buttonFadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-button:hover {
+            background-color: var(--button-hover-background);
+            /* 调整 transform 以增强Q弹感 */
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35); /* 增强阴影 */
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .hero-button:active {
+            /* 调整 active 状态的 transform */
+            transform: translateY(-2px) scale(1.05);
+            transition-duration: 0.1s; /* 点击时响应更快 */
+        }
+
+        /* 点击波纹效果 */
+        .hero-button::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+        }
+
+        .hero-button:active::after {
+            transform: scale(0, 0);
+            opacity: .5;
+            transition: 0s;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 50px 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+        }
+        
+        .modal-content {
+            position: relative;
+            background-color: #1d1d1f;
+            margin: auto;
+            width: 90%;
+            max-width: 1200px;
+            padding: 40px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            color: #f5f5f7;
+            transform: translateY(30px);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            color: #f5f5f7;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+        }
+        
+        .close-button:hover {
+            color: #0071e3;
+            transform: rotate(90deg);
+        }
+        
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .gallery-item {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInItem 0.5s forwards;
+            animation-delay: calc(var(--item-index) * 0.1s);
+        }
+        
+        @keyframes fadeInItem {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+        
+        .modal-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 32px;
+            font-weight: 600;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 40px;
+            }
+            
+            .hero p {
+                font-size: 20px;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 44px;
+                left: 0;
+                width: 100%;
+                background-color: rgba(0, 0, 0, 0.9);
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 0;
+                transform: translateY(-100%);
+                transition: transform 0.4s ease-in-out;
+                z-index: 999;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            }
+            
+            .nav-links.active {
+                transform: translateY(0);
+            }
+            
+            .nav-links li {
+                margin: 15px 0;
+                opacity: 0;
+                transform: translateX(-20px);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                transition-delay: calc(var(--item-index) * 0.05s);
+            }
+            
+            .nav-links.active li {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-button {
+                padding: 10px 24px;
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                padding: 30px 20px;
+            }
+            
+            .gallery {
+                gap: 15px;
+            }
+            
+            .modal-title {
+                font-size: 24px;
+            }
+            
+            .page-loader .loader {
+                width: 40px;
+                height: 40px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .logo {
+                font-size: 18px;
+            }
+            
+            .gallery-item {
+                max-width: 100%;
+            }
+            
+            .modal {
+                padding: 20px 0;
+            }
+            
+            .modal-content {
+                padding: 25px 15px;
+                width: 95%;
+            }
+            
+            .close-button {
+                top: 10px;
+                right: 15px;
+                font-size: 24px;
+            }
+        }
+        
+        /* 添加触摸优化 */
+        @media (hover: none) {
+            .nav-links a:active {
+                opacity: 1;
+            }
+            
+            .gallery-item:active {
+                transform: scale(1.01);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 页面加载动画 -->
+    <div class="page-loader">
+        <div class="loader"></div>
+    </div>
+    
+    <!-- 导航栏 -->
+    <nav id="mainNav">
+        <div class="nav-container">
+            <a href="#" class="logo">圆桌摄影</a>
+            <div class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li style="--item-index: 0"><a id="bookingLink">约拍</a></li>
+                <li style="--item-index: 1"><a href="https://pan.baidu.com/s/1UyvHBUzC5sPy6cZwzLpy1w?pwd=tpj2" target="_blank">作品自取</a></li>
+                <li style="--item-index: 2"><a href="https://www.xiaohongshu.com/user/profile/662f8a28000000000700414a?xsec_token=YBcdUvPcmVBeCxdyNBUsdydYofOcY9cnNoaSwBz1vg8jA%3D&xsec_source=app_share&xhsshare=CopyLink&appuid=662f8a28000000000700414a&apptime=1752680074&share_id=36a4a83c18ed48c2883fb9f36966ed56&share_channel=copy_link" target="_blank">作品集</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- 英雄区域 -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>圆桌摄影</h1>
+            <p>捕捉每一个珍贵瞬间，定格永恒回忆</p>
+            <div class="hero-buttons">
+                <a id="heroBookingLink" class="hero-button" style="--button-index: 0;">约拍</a>
+                <a href="https://pan.baidu.com/s/1UyvHBUzC5sPy6cZwzLpy1w?pwd=tpj2" target="_blank" class="hero-button" style="--button-index: 1;">作品自取</a>
+                <a href="https://www.xiaohongshu.com/user/profile/662f8a28000000000700414a?xsec_token=YBcdUvPcmVBeCxdyNBUsdydYofOcY9cnNoaSwBz1vg8jA%3D&xsec_source=app_share&xhsshare=CopyLink&appuid=662f8a28000000000700414a&apptime=1752680074&share_id=36a4a83c18ed48c2883fb9f36966ed56&share_channel=copy_link" target="_blank" class="hero-button" style="--button-index: 2;">作品集</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- 约拍模态框 -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModal">&times;</span>
+            <h2 class="modal-title">请选择你的英雄</h2>
+            <div class="gallery">
+                <div class="gallery-item" style="--item-index: 0">
+                    <img src="https://wxydsb.github.io/bsmgzjsq/WechatIMG116.jpg" alt="约拍作品1" loading="lazy">
+                </div>
+                <div class="gallery-item" style="--item-index: 1">
+                    <img src="https://wxydsb.github.io/bsmgzjsq/WechatIMG115.jpg" alt="约拍作品2" loading="lazy">
+                </div>
+                <div class="gallery-item" style="--item-index: 2">
+                    <img src="https://wxydsb.github.io/bsmgzjsq/WechatIMG117.jpg" alt="约拍作品3" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 页面加载动画
+            const pageLoader = document.querySelector('.page-loader');
+            window.addEventListener('load', function() {
+                setTimeout(function() {
+                    pageLoader.classList.add('fade-out');
+                }, 500);
+            });
+            
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            const bookingLink = document.getElementById('bookingLink');
+            const heroBookingLink = document.getElementById('heroBookingLink'); // 新增主页约拍按钮
+            const bookingModal = document.getElementById('bookingModal');
+            const closeModal = document.getElementById('closeModal');
+            const mainNav = document.getElementById('mainNav');
+            
+            // 导航栏滚动隐藏/显示
+            let lastScrollTop = 0;
+            window.addEventListener('scroll', function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 100) {
+                    // 向下滚动
+                    mainNav.classList.add('nav-hidden');
+                } else {
+                    // 向上滚动
+                    mainNav.classList.remove('nav-hidden');
+                }
+                lastScrollTop = scrollTop;
+            });
+            
+            // 汉堡菜单点击事件
+            menuToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                // 设置菜单项的动画延迟
+                const navItems = document.querySelectorAll('.nav-links li');
+                navItems.forEach((item, index) => {
+                    item.style.setProperty('--item-index', index);
+                });
+            });
+            
+            // 点击导航链接后关闭菜单
+            const navItems = document.querySelectorAll('.nav-links a');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                    }
+                });
+            });
+            
+            // 约拍按钮点击事件 (统一处理)
+            function openBookingModal() {
+                bookingModal.style.display = 'block';
+                document.body.style.overflow = 'hidden'; // 防止背景滚动
+                
+                // 设置画廊项目的动画延迟
+                const galleryItems = document.querySelectorAll('.gallery-item');
+                galleryItems.forEach((item, index) => {
+                    item.style.setProperty('--item-index', index);
+                });
+                
+                // 添加淡入动画
+                setTimeout(function() {
+                    bookingModal.classList.add('show');
+                }, 10);
+            }
+
+            bookingLink.addEventListener('click', openBookingModal);
+            heroBookingLink.addEventListener('click', openBookingModal); // 为新按钮添加事件监听
+            
+            // 关闭模态框
+            function closeModalFunc() {
+                bookingModal.classList.remove('show');
+                setTimeout(function() {
+                    bookingModal.style.display = 'none';
+                    document.body.style.overflow = 'auto'; // 恢复背景滚动
+                }, 400); // 等待动画完成
+            }
+            
+            closeModal.addEventListener('click', closeModalFunc);
+            
+            // 点击模态框外部关闭
+            window.addEventListener('click', function(event) {
+                if (event.target == bookingModal) {
+                    closeModalFunc();
+                }
+            });
+            
+            // 处理移动设备上的触摸事件
+            document.addEventListener('touchstart', function() {}, {passive: true});
+            
+            // 添加键盘导航支持
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && bookingModal.style.display === 'block') {
+                    closeModalFunc();
+                }
+            });
+            
+            // 优化图片加载
+            const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+            if ('loading' in HTMLImageElement.prototype) {
+                // 浏览器支持原生懒加载
+                console.log('Browser supports native lazy loading');
+            } else {
+                // 浏览器不支持原生懒加载，使用 Intersection Observer
+                const imageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            const image = entry.target;
+                            image.src = image.dataset.src;
+                            imageObserver.unobserve(image);
+                        }
+                    });
+                });
+                
+                lazyImages.forEach(function(image) {
+                    imageObserver.observe(image);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
